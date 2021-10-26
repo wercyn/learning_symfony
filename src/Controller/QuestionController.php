@@ -5,27 +5,28 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
 
 class QuestionController extends AbstractController
 {
     /**
-     * @Route("/")
+     * @Route("/", name="app_homepage")
      */
     public function homepage()
     {
-        return new Response('ASD A sdfds fsd fsdf');
+        return $this->render('question/homepage.html.twig');
     }
 
     /**
-     * @Route("/questions/{question}")
+     * @Route("/questions/{question}", name="app_question_show")
      */
     public function show($question)
     {
 
         $answers = [
             'testowa odpwoeidz na zadane pytanie',
-            'głupia odpowiedz człowiekasfrustrowanego życiem',
-            'najgorsza firma to trol intermedia'
+            'kolejna testowa odpowiedź na pytanie',
+            'totalne zaskoczenie ale to kolejna odpowiedź '
         ];
 
         return $this->render('question/show.html.twig', [
