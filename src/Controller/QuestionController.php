@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 use Twig\Environment;
 
 class QuestionController extends AbstractController
@@ -20,18 +22,25 @@ class QuestionController extends AbstractController
     /**
      * @Route("/questions/{question}", name="app_question_show")
      */
-    public function show($question)
+    public function show($question, MarkdownParserInterface $markdownParser, CacheInterface $cache)
     {
 
         $answers = [
             'testowa odpwoeidz na zadane pytanie',
             'kolejna testowa odpowiedź na pytanie',
-            'totalne zaskoczenie ale to kolejna odpowiedź '
+            'Make sure your cat is sitting `purrrfectly` still 🤣'
         ];
 
+        $questionText = 'Dlaczego kwadrat ma **4** kąty?';
+        $parsedQuestionText = $cache->get('markdown_'.md5($questionText), function() use ($questionText, $markdownParser){
+            return $markdownParser->transformMarkdown($questionText);
+        });
+        $questionAuthor = 'Wercyn';
+        dump($cache);
         return $this->render('question/show.html.twig', [
             'question' => ucwords(str_replace('-', ' ', $question)),
-            'text' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+            'questionText' => $parsedQuestionText,
+            'questionAuthor' => $questionAuthor,
             'answers' => $answers
         ]);
     }
