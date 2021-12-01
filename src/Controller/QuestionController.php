@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
-use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
+use App\Service\MarkdownHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\CacheInterface;
 use Twig\Environment;
 
 class QuestionController extends AbstractController
@@ -22,7 +21,7 @@ class QuestionController extends AbstractController
     /**
      * @Route("/questions/{question}", name="app_question_show")
      */
-    public function show($question, MarkdownParserInterface $markdownParser, CacheInterface $cache)
+    public function show($question, MarkdownHelper $markdownHelper)
     {
 
         $answers = [
@@ -32,11 +31,8 @@ class QuestionController extends AbstractController
         ];
 
         $questionText = 'Dlaczego kwadrat ma **4** kąty?';
-        $parsedQuestionText = $cache->get('markdown_'.md5($questionText), function() use ($questionText, $markdownParser){
-            return $markdownParser->transformMarkdown($questionText);
-        });
+        $parsedQuestionText = $markdownHelper->parse($questionText);
         $questionAuthor = 'Wercyn';
-        dump($cache);
         return $this->render('question/show.html.twig', [
             'question' => ucwords(str_replace('-', ' ', $question)),
             'questionText' => $parsedQuestionText,
